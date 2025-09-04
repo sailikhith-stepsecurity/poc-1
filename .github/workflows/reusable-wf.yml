@@ -19,7 +19,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: ./
+        uses: step-security/changed-files@v46.0.5
 
       - name: Echo list of changed files
         run: |
