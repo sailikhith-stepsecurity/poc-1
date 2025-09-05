@@ -4,12 +4,20 @@ on:
     issues:
         types: [opened]
 
+permissions:
+  contents: read
+
 jobs:
     auto-assign:
         runs-on: ubuntu-latest
         permissions:
             issues: write
         steps:
+            - name: Harden the runner (Audit all outbound calls)
+              uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+              with:
+                egress-policy: audit
+
             - name: 'Auto-assign issue'
               uses: pozil/auto-assign-issue@v1
               with:

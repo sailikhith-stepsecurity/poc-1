@@ -35,6 +35,11 @@ jobs:
   test-injection-2:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
       - run: echo "${{ inputs.args }}"
 
   validate-pr-title:
@@ -42,6 +47,11 @@ jobs:
     name: Validate PR Title
     runs-on: ubuntu-latest
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
