@@ -1,68 +1,20 @@
 name: Reusable test wf
 on:
   workflow_call:
-    inputs:
-        args:
-          required: false
-          default: Hello
-          type: string
 
 permissions:
   contents: read
 
 jobs:
-
-  test-script-injection:
+  test-pr-title:
     runs-on: ubuntu-latest
     steps:
-      - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
-        with:
-          egress-policy: audit
-
-      - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Get changed files
-        id: changed-files
-        uses: step-security/changed-files@v46.0.5
-
-      - name: Echo list of changed files
+      - name: Extract PR title from context
+        id: extract
         run: |
-          echo "Changed files:"
-          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          # pull request title comes directly from GitHub context
+          echo "pr_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
 
-  test-injection-2:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "${{ inputs.args }}"
-
-  validate-pr-title:
-    if: ${{ github.repository_owner == 'nrwl' }}
-    name: Validate PR Title
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          # For pull_request_target, we need to checkout the base branch
-          ref: ${{ github.event.pull_request.base.ref }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Create PR message file
+      - name: Use PR title unsafely
         run: |
-          mkdir -p /tmp
-          cat > /tmp/pr-message.txt << 'EOF'
-          ${{ github.event.pull_request.title }}
-          
-          ${{ github.event.pull_request.body }}
-          EOF
-          
-      - name: Validate PR title
-        run: |
-          echo "Validating PR title: ${{ github.event.pull_request.title }}"
-          node ./scripts/commit-lint.js /tmp/pr-message.txt 
+          echo "Building ${{ steps.extract.outputs.pr_title }}"
