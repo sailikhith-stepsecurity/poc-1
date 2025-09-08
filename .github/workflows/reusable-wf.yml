@@ -17,4 +17,4 @@ jobs:
 
       - name: Use PR title unsafely
         run: |
-          echo "Building ${{ steps.extract.outputs.pr_title }}"
+          echo "${{ steps.extract.outputs.pr_title }}"
